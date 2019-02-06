@@ -7,11 +7,8 @@ package empresa.software.sc.restapi.model;
 
 /**
  *
- * @author Steven
+ * @author pedro
  */
-public enum  RoleName {
-    ROLE_USER,
-    ROLE_ADMIN,
-    ROLE_ESCORT,
-    ROLE_CLIENTE
+public class Contrato {
+    
 }

@@ -13,10 +13,12 @@ import empresa.software.sc.restapi.exception.AppException;
 import empresa.software.sc.restapi.model.Role;
 import empresa.software.sc.restapi.model.RoleName;
 import empresa.software.sc.restapi.model.User;
+import empresa.software.sc.restapi.payload.AccountDetailsRequest;
 import empresa.software.sc.restapi.payload.ApiResponse;
 import empresa.software.sc.restapi.payload.JwtAuthenticationResponse;
 import empresa.software.sc.restapi.payload.LoginRequest;
 import empresa.software.sc.restapi.payload.SignUpRequest;
+import empresa.software.sc.restapi.repository.EscortRepository;
 import empresa.software.sc.restapi.repository.RoleRepository;
 import empresa.software.sc.restapi.repository.UserRepository;
 import empresa.software.sc.restapi.security.JwtTokenProvider;
@@ -47,6 +49,9 @@ public class AuthController {
 
     @Autowired
     UserRepository userRepository;
+    
+    @Autowired
+    EscortRepository escortRepository;
 
     @Autowired
     RoleRepository roleRepository;
@@ -103,5 +108,5 @@ public class AuthController {
                 .buildAndExpand(result.getUsername()).toUri();
 
         return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully"));
-    }
+    } 
 }

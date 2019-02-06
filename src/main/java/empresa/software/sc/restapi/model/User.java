@@ -29,7 +29,9 @@ import java.util.Set;
             "email"
         })
 })
-
+@Inheritance(
+    strategy = InheritanceType.JOINED
+)
 public class User extends DateAudit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,7 +60,7 @@ public class User extends DateAudit {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
-
+    
     public User() {
 
     }
