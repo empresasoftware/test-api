@@ -7,6 +7,7 @@ package empresa.software.sc.restapi.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -19,6 +20,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.Type;
 
 /**
  *
@@ -51,8 +53,7 @@ public class Foto implements Serializable {
     public Foto() {
     }
 
-    public Foto(Long id, String nombre, String tipo, byte[] foto, Escort escort) {
-        this.id = id;
+    public Foto(String nombre, String tipo, byte[] foto, Escort escort) {
         this.nombre = nombre;
         this.tipo = tipo;
         this.foto = foto;
