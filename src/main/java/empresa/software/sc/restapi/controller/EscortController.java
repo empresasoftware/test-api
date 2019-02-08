@@ -39,7 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author pedro
  */
 @RestController
-@RequestMapping("/api/escort")
+@RequestMapping("/api/escorts")
 public class EscortController {
     @Autowired
     private UserRepository userRepository;
@@ -57,7 +57,7 @@ public class EscortController {
         return escortRepository.findByUsername(username).get();
     }
 
-    @Secured({"ROLE_CLIENTE"})
+    @Secured({"ROLE_ESCORT"})
     @GetMapping("/me")
     public User accountDetails(@CurrentUser UserPrincipal userprincipal) {
         return escortRepository.findByUsername(userprincipal.getUsername()).get();
@@ -65,8 +65,8 @@ public class EscortController {
     
 
     @Secured({"ROLE_ESCORT"})
-    @PostMapping("/resgitrar")
-    ResponseEntity<?> registerUserCliente(@CurrentUser UserPrincipal userprincipal, @Valid @RequestBody EscortRequest escortRequest) {
+    @PostMapping("/regitrar")
+    ResponseEntity<?> registerUserEscort(@CurrentUser UserPrincipal userprincipal, @Valid @RequestBody EscortRequest escortRequest) {
                 
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -80,6 +80,40 @@ public class EscortController {
         
         Escort escort = (Escort)userRepository.findByUsername(userprincipal.getUsername()).get();
         // Creating escort's account
+        escort.setProlifeEdited(true);
+        escort.setBiografia(escortRequest.getBiografia());
+        escort.setCabello(escortRequest.getCabello());
+        escort.setEstatura(escortRequest.getEstatura());
+        escort.setFechaNacimiento(date);
+        escort.setIdiomas(escortRequest.getIdiomas());
+        escort.setLugares(escortRequest.getLugares());
+        escort.setMedidas(escortRequest.getMedidas());
+        escort.setOrientacion(escortRequest.getOrientacion());
+        escort.setPeso(escortRequest.getPeso());
+        escort.setRestricciones(escortRequest.getRestricciones());
+        
+        escortRepository.save(escort);
+        
+        return null;
+    }
+    
+    @Secured({"ROLE_ADMIN"})
+    @PostMapping("/regitrar/{username}")
+    ResponseEntity<?> registerUserEscort(@PathVariable String username, @Valid @RequestBody EscortRequest escortRequest) {
+                
+        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+        df.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        Date date = null;
+        try {
+            date = df.parse(escortRequest.getFechaNacimiento());
+        } catch (ParseException ex) {
+            Logger.getLogger(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        Escort escort = (Escort)userRepository.findByUsername(username).get();
+        // Creating escort's account
+        escort.setProlifeEdited(true);
         escort.setBiografia(escortRequest.getBiografia());
         escort.setCabello(escortRequest.getCabello());
         escort.setEstatura(escortRequest.getEstatura());

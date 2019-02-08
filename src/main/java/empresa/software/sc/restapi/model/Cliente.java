@@ -44,7 +44,7 @@ public class Cliente extends User {
     }
 
     public Cliente(String pais, String estado, Date fechaNacimiento, String name, String username, String email, String password) {
-        super(name, username, email, password);
+        super(name, username, email, password, true);
         this.pais = pais;
         this.estado = estado;
         this.fechaNacimiento = fechaNacimiento;

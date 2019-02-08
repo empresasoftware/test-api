@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author pedro
  */
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/clientes")
 public class ClienteController {
  
     @Autowired
@@ -64,7 +64,7 @@ public class ClienteController {
     }
     
     @Secured({"ROLE_CLIENTE"})
-    @PostMapping("/resgitrar")
+    @PostMapping("/regitrar")
     ResponseEntity<?> registerUserCliente(@CurrentUser UserPrincipal userprincipal, @Valid @RequestBody ClienteRequest clienteRequest) {
                 
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
@@ -79,6 +79,7 @@ public class ClienteController {
         
         Cliente cliente = (Cliente)userRepository.findByUsername(userprincipal.getUsername()).get();
         // Creating cliente's account
+        cliente.setProlifeEdited(true);
         cliente.setEstado(clienteRequest.getEstado());
         cliente.setFechaNacimiento(date);
         cliente.setPais(clienteRequest.getPais());
@@ -88,7 +89,7 @@ public class ClienteController {
     }
     
     @Secured({"ROLE_ADMIN"})
-    @PostMapping("/{username}")
+    @PostMapping("/registrar/{username}")
     ResponseEntity<?> registerUserCliente(@PathVariable String username, @Valid @RequestBody ClienteRequest clienteRequest) {
                 
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
@@ -103,6 +104,7 @@ public class ClienteController {
         
         Cliente cliente = (Cliente)userRepository.findByUsername(username).get();
         // Creating cliente's account
+        cliente.setProlifeEdited(true);
         cliente.setEstado(clienteRequest.getEstado());
         cliente.setFechaNacimiento(date);
         cliente.setPais(clienteRequest.getPais());

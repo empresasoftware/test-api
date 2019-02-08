@@ -49,8 +49,8 @@ public class FotoController {
     @Autowired
     DBFileStorageService bFileStorageService;
 
-    @GetMapping("/{escortUsername}/fotos")
-    public Page<Foto> getAllPhotosByEscortUsername(@PathVariable(value = "escortUsername") String escortUsername,
+    @GetMapping("/{username}/fotos")
+    public Page<Foto> getAllPhotosByEscortUsername(@PathVariable(value = "username") String escortUsername,
             Pageable pageable) {
         return fotoRepository.findByEscortId(escortRepository.findByUsername(escortUsername).get().getId(), pageable);
     }
@@ -62,7 +62,7 @@ public class FotoController {
         Foto foto = bFileStorageService.storeFile(file, escortRepository.findByUsername(userprincipal.getUsername()).get());
 
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/escort/{escortUsername}/foto/{idFoto}")
+                .path("/escort/{username}/foto/{idFoto}")
                 .path(foto.getId().toString())
                 .toUriString();
 
@@ -70,7 +70,7 @@ public class FotoController {
                 file.getContentType(), file.getSize());
     }
 
-    @GetMapping("/{escortUsername}/foto/{idFoto}")
+    @GetMapping("/{username}/foto/{idFoto}")
     public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable Long idFoto) {
         // Load file from database
         Foto foto = bFileStorageService.getFile(idFoto);

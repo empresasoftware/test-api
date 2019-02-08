@@ -54,6 +54,8 @@ public class User extends DateAudit {
     @NotBlank
     @Size(max = 100)
     private String password;
+    
+    protected boolean prolifeEdited;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",
@@ -65,11 +67,12 @@ public class User extends DateAudit {
 
     }
 
-    public User(String name, String username, String email, String password) {
+    public User(String name, String username, String email, String password, boolean prolifeEdited) {
         this.name = name;
         this.username = username;
         this.email = email;
         this.password = password;
+        this.prolifeEdited = prolifeEdited;
     }
 
     public Long getId() {
@@ -118,5 +121,13 @@ public class User extends DateAudit {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public boolean isProlifeEdited() {
+        return prolifeEdited;
+    }
+
+    public void setProlifeEdited(boolean prolifeEdited) {
+        this.prolifeEdited = prolifeEdited;
     }
 }

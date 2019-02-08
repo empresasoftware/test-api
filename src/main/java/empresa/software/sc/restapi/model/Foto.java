@@ -40,8 +40,7 @@ public class Foto implements Serializable {
     @Column(name = "tipo")
     private String tipo;
     
-    @Lob
-    @Column(name = "foto", columnDefinition="bytea")
+    @JsonIgnore
     private byte[] foto;
     
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

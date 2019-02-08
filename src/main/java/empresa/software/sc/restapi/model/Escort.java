@@ -83,7 +83,7 @@ public class Escort extends User {
     }
 
     public Escort(String pais, double estatura, double peso, String idiomas, String biografia, String orientacion, String cabello, String medidas, Date fechaNacimiento, String lugares, String restricciones, String name, String username, String email, String password) {
-        super(name, username, email, password);
+        super(name, username, email, password, true);
         this.pais = pais;
         this.estatura = estatura;
         this.peso = peso;
