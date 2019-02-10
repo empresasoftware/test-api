@@ -15,16 +15,17 @@ import javax.validation.constraints.Size;
  *
  * @author pedro
  */
-public class EscortRequest {
+public class EscortRequest extends SignUpRequest{
+    
     @NotBlank
     @Size(max = 20)
     private String pais;
 
     @NotBlank
-    private double estatura;
+    private String estatura;
 
     @NotBlank
-    private double peso;
+    private String peso;
     
     @NotBlank
     @Size(max = 100)
@@ -61,11 +62,11 @@ public class EscortRequest {
         return pais;
     }
 
-    public double getEstatura() {
+    public String getEstatura() {
         return estatura;
     }
 
-    public double getPeso() {
+    public String getPeso() {
         return peso;
     }
 
@@ -105,11 +106,11 @@ public class EscortRequest {
         this.pais = pais;
     }
 
-    public void setEstatura(double estatura) {
+    public void setEstatura(String estatura) {
         this.estatura = estatura;
     }
 
-    public void setPeso(double peso) {
+    public void setPeso(String peso) {
         this.peso = peso;
     }
 

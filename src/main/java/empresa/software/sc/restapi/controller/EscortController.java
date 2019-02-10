@@ -65,7 +65,7 @@ public class EscortController {
     
 
     @Secured({"ROLE_ESCORT"})
-    @PostMapping("/regitrar")
+    @PostMapping("/registrar")
     ResponseEntity<?> registerUserEscort(@CurrentUser UserPrincipal userprincipal, @Valid @RequestBody EscortRequest escortRequest) {
                 
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
@@ -83,13 +83,13 @@ public class EscortController {
         escort.setProlifeEdited(true);
         escort.setBiografia(escortRequest.getBiografia());
         escort.setCabello(escortRequest.getCabello());
-        escort.setEstatura(escortRequest.getEstatura());
+        escort.setEstatura(Double.parseDouble(escortRequest.getEstatura()));
         escort.setFechaNacimiento(date);
         escort.setIdiomas(escortRequest.getIdiomas());
         escort.setLugares(escortRequest.getLugares());
         escort.setMedidas(escortRequest.getMedidas());
         escort.setOrientacion(escortRequest.getOrientacion());
-        escort.setPeso(escortRequest.getPeso());
+        escort.setPeso(Double.parseDouble(escortRequest.getPeso()));
         escort.setRestricciones(escortRequest.getRestricciones());
         
         escortRepository.save(escort);
@@ -98,7 +98,7 @@ public class EscortController {
     }
     
     @Secured({"ROLE_ADMIN"})
-    @PostMapping("/regitrar/{username}")
+    @PostMapping("/registrar/{username}")
     ResponseEntity<?> registerUserEscort(@PathVariable String username, @Valid @RequestBody EscortRequest escortRequest) {
                 
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
@@ -116,13 +116,13 @@ public class EscortController {
         escort.setProlifeEdited(true);
         escort.setBiografia(escortRequest.getBiografia());
         escort.setCabello(escortRequest.getCabello());
-        escort.setEstatura(escortRequest.getEstatura());
+        escort.setEstatura(Double.parseDouble(escortRequest.getEstatura()));
         escort.setFechaNacimiento(date);
         escort.setIdiomas(escortRequest.getIdiomas());
         escort.setLugares(escortRequest.getLugares());
         escort.setMedidas(escortRequest.getMedidas());
         escort.setOrientacion(escortRequest.getOrientacion());
-        escort.setPeso(escortRequest.getPeso());
+        escort.setPeso(Double.parseDouble(escortRequest.getPeso()));
         escort.setRestricciones(escortRequest.getRestricciones());
         
         escortRepository.save(escort);

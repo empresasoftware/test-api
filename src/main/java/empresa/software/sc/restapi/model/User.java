@@ -55,7 +55,7 @@ public class User extends DateAudit {
     @Size(max = 100)
     private String password;
     
-    @Column(name = "prolifeedited")
+    @Column(name = "prolife_edited")
     protected Boolean prolifeEdited ;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -68,7 +68,7 @@ public class User extends DateAudit {
 
     }
 
-    public User(String name, String username, String email, String password, boolean prolifeEdited) {
+    public User(String name, String username, String email, String password, Boolean prolifeEdited) {
         this.name = name;
         this.username = username;
         this.email = email;
@@ -128,7 +128,7 @@ public class User extends DateAudit {
         return prolifeEdited;
     }
 
-    public void setProlifeEdited(boolean prolifeEdited) {
+    public void setProlifeEdited(Boolean prolifeEdited) {
         this.prolifeEdited = prolifeEdited;
     }
 }

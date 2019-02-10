@@ -25,10 +25,8 @@ public class Escort extends User {
     @Size(max = 20)
     private String pais;
 
-    @NotBlank
     private double estatura;
 
-    @NotBlank
     private double peso;
     
     @NotBlank
@@ -51,7 +49,7 @@ public class Escort extends User {
     @Size(max = 12)
     private String medidas;
     
-    @NotBlank
+    @Column(name = "fecha_nacimiento",nullable=false)
     @Temporal(TemporalType.DATE)
     private Date fechaNacimiento;
     

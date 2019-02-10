@@ -6,6 +6,7 @@
 package empresa.software.sc.restapi.model;
 
 import java.util.Date;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -31,7 +32,8 @@ public class Cliente extends User {
     @Size(max = 20)
     private String estado;
     
-    @NotBlank
+    @Column(name = "fecha_nacimiento",nullable=false)
+    @Temporal(javax.persistence.TemporalType.DATE)
     private Date fechaNacimiento;
 
     public Cliente() {

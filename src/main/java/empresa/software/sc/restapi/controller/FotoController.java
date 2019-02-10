@@ -5,15 +5,12 @@
  */
 package empresa.software.sc.restapi.controller;
 
-import empresa.software.sc.restapi.exception.ResourceNotFoundException;
 import empresa.software.sc.restapi.model.Foto;
 import empresa.software.sc.restapi.repository.EscortRepository;
 import empresa.software.sc.restapi.repository.FotoRepository;
 import empresa.software.sc.restapi.security.CurrentUser;
 import empresa.software.sc.restapi.security.UserPrincipal;
 import empresa.software.sc.restapi.service.DBFileStorageService;
-import javax.annotation.Resource;
-import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;

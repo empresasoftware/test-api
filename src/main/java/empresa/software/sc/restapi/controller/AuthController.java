@@ -10,14 +10,19 @@ package empresa.software.sc.restapi.controller;
  * @author Steven
  */
 import empresa.software.sc.restapi.exception.AppException;
+import empresa.software.sc.restapi.model.Cliente;
+import empresa.software.sc.restapi.model.Escort;
 import empresa.software.sc.restapi.model.Role;
 import empresa.software.sc.restapi.model.RoleName;
 import empresa.software.sc.restapi.model.User;
 import empresa.software.sc.restapi.payload.AccountDetailsRequest;
 import empresa.software.sc.restapi.payload.ApiResponse;
+import empresa.software.sc.restapi.payload.ClienteRequest;
+import empresa.software.sc.restapi.payload.EscortRequest;
 import empresa.software.sc.restapi.payload.JwtAuthenticationResponse;
 import empresa.software.sc.restapi.payload.LoginRequest;
 import empresa.software.sc.restapi.payload.SignUpRequest;
+import empresa.software.sc.restapi.repository.ClienteRepository;
 import empresa.software.sc.restapi.repository.EscortRepository;
 import empresa.software.sc.restapi.repository.RoleRepository;
 import empresa.software.sc.restapi.repository.UserRepository;
@@ -38,7 +43,13 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
+import java.util.TimeZone;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -49,6 +60,9 @@ public class AuthController {
 
     @Autowired
     UserRepository userRepository;
+    
+    @Autowired
+    ClienteRepository clienteRepository;
 
     @Autowired
     EscortRepository escortRepository;
@@ -79,7 +93,7 @@ public class AuthController {
     }
 
     @PostMapping("/cliente/signup")
-    public ResponseEntity<?> registerUserClient(@Valid @RequestBody SignUpRequest signUpRequest) {
+    public ResponseEntity<?> registerUserClient(@Valid @RequestBody ClienteRequest signUpRequest) {
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
             return new ResponseEntity(new ApiResponse(false, "Username is already taken!"),
                     HttpStatus.BAD_REQUEST);
@@ -90,9 +104,18 @@ public class AuthController {
                     HttpStatus.BAD_REQUEST);
         }
 
+        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+        df.setTimeZone(TimeZone.getTimeZone("UTC"));
+        
+        Date date = null;
+        try {
+            date = df.parse(signUpRequest.getFechaNacimiento());
+        } catch (ParseException ex) {
+            Logger.getLogger(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
+        }
         // Creating user's account
-        User user = new User(signUpRequest.getName(), signUpRequest.getUsername(),
-                signUpRequest.getEmail(), signUpRequest.getPassword(), false);
+        Cliente user = new Cliente(signUpRequest.getPais(),signUpRequest.getEstado(), date,
+                signUpRequest.getName(), signUpRequest.getUsername(), signUpRequest.getEmail(), signUpRequest.getPassword());
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
@@ -101,17 +124,17 @@ public class AuthController {
 
         user.setRoles(Collections.singleton(userRole));
 
-        User result = userRepository.save(user);
+        Cliente result = clienteRepository.save(user);
 
         URI location = ServletUriComponentsBuilder
-                .fromCurrentContextPath().path("/api/clientes/{username}")
+                .fromCurrentContextPath().path("/api/clientes/")
                 .buildAndExpand(result.getUsername()).toUri();
 
         return ResponseEntity.created(location).body(new ApiResponse(true, "Cliente registered successfully"));
     }
 
     @PostMapping("/escort/signup")
-    public ResponseEntity<?> registerUserEscort(@Valid @RequestBody SignUpRequest signUpRequest) {
+    public ResponseEntity<?> registerUserEscort(@Valid @RequestBody EscortRequest signUpRequest) {
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
             return new ResponseEntity(new ApiResponse(false, "Username is already taken!"),
                     HttpStatus.BAD_REQUEST);
@@ -122,9 +145,18 @@ public class AuthController {
                     HttpStatus.BAD_REQUEST);
         }
 
-        // Creating user's account
-        User user = new User(signUpRequest.getName(), signUpRequest.getUsername(),
-                signUpRequest.getEmail(), signUpRequest.getPassword(), false);
+        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+        df.setTimeZone(TimeZone.getTimeZone("UTC"));
+        
+        Date date = null;
+        try {
+            date = df.parse(signUpRequest.getFechaNacimiento());
+        } catch (ParseException ex) {
+            Logger.getLogger(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        // Creating escort's account
+        Escort user = new Escort(signUpRequest.getPais(), Double.parseDouble(signUpRequest.getEstatura()), Double.parseDouble(signUpRequest.getPeso()), signUpRequest.getIdiomas(), signUpRequest.getBiografia(), signUpRequest.getOrientacion(), signUpRequest.getCabello(), signUpRequest.getMedidas(), date, signUpRequest.getLugares(), signUpRequest.getRestricciones(), 
+                signUpRequest.getName(), signUpRequest.getUsername(), signUpRequest.getEmail(), signUpRequest.getPassword());
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
@@ -133,10 +165,10 @@ public class AuthController {
 
         user.setRoles(Collections.singleton(userRole));
 
-        User result = userRepository.save(user);
+        Escort result = escortRepository.save(user);
 
         URI location = ServletUriComponentsBuilder
-                .fromCurrentContextPath().path("/api/escorts/{username}")
+                .fromCurrentContextPath().path("/api/escorts/")
                 .buildAndExpand(result.getUsername()).toUri();
 
         return ResponseEntity.created(location).body(new ApiResponse(true, "Escort registered successfully"));

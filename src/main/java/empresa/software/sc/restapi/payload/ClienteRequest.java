@@ -15,7 +15,7 @@ import javax.validation.constraints.Size;
  *
  * @author pedro
  */
-public class ClienteRequest {
+public class ClienteRequest extends SignUpRequest{
     
     @NotBlank
     @Size(max = 20)
