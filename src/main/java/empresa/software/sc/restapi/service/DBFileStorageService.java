@@ -9,22 +9,30 @@ package empresa.software.sc.restapi.service;
  *
  * @author pedro
  */
+import empresa.software.sc.restapi.controller.FotoController;
 import empresa.software.sc.restapi.exception.FileStorageException;
 import empresa.software.sc.restapi.exception.MyFileNotFoundException;
 import empresa.software.sc.restapi.model.Escort;
 import empresa.software.sc.restapi.model.Foto;
+import empresa.software.sc.restapi.repository.EscortRepository;
 import empresa.software.sc.restapi.repository.FotoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.commons.lang3.ArrayUtils;
 
 @Service
 public class DBFileStorageService {
 
     @Autowired
     private FotoRepository fotoRepository;
+    
+    @Autowired
+    private EscortRepository escortRepository;
     
 
     public Foto storeFile(MultipartFile file, Escort escort) {
@@ -40,6 +48,25 @@ public class DBFileStorageService {
             Foto foto = new Foto(fileName, file.getContentType(), file.getBytes(), escort);
 
             return fotoRepository.save(foto);
+        } catch (IOException ex) {
+            throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
+        }
+    }
+    
+    public Escort storeFotoPerfil(MultipartFile file, Escort escort) {
+        // Normalize file name
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+
+        try {
+            // Check if the file's name contains invalid characters
+            if(fileName.contains("..")) {
+                throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
+            }
+
+            escort.setFotoPerfil(ArrayUtils.toObject(file.getBytes()));
+            escort.setTipoFoto(file.getContentType());
+            
+            return escortRepository.save(escort);
         } catch (IOException ex) {
             throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
         }

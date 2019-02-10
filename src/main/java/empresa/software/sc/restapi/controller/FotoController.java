@@ -5,17 +5,24 @@
  */
 package empresa.software.sc.restapi.controller;
 
+import empresa.software.sc.restapi.model.Escort;
 import empresa.software.sc.restapi.model.Foto;
+import empresa.software.sc.restapi.payload.ApiResponse;
 import empresa.software.sc.restapi.repository.EscortRepository;
 import empresa.software.sc.restapi.repository.FotoRepository;
 import empresa.software.sc.restapi.security.CurrentUser;
 import empresa.software.sc.restapi.security.UserPrincipal;
 import empresa.software.sc.restapi.service.DBFileStorageService;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -34,7 +41,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
  * @author pedro
  */
 @RestController
-@RequestMapping("/api/escort")
+@RequestMapping("/api/escorts")
 public class FotoController {
 
     @Autowired
@@ -59,12 +66,42 @@ public class FotoController {
         Foto foto = bFileStorageService.storeFile(file, escortRepository.findByUsername(userprincipal.getUsername()).get());
 
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/escort/{username}/foto/{idFoto}")
+                .path("/escorts/{username}/foto/{idFoto}")
                 .path(foto.getId().toString())
                 .toUriString();
 
         return new UploadFileResponse(foto.getNombre(), fileDownloadUri,
                 file.getContentType(), file.getSize());
+    }
+
+    @Secured({"ROLE_ESCORT"})
+    @PostMapping("/uploadFotoPerfil")
+    public ResponseEntity<?> uploadFotoPerfil(@CurrentUser UserPrincipal userprincipal,
+            @RequestParam("file") MultipartFile file) {
+        bFileStorageService.storeFotoPerfil(file, escortRepository.findByUsername(userprincipal.getUsername()).get());
+
+        return new ResponseEntity(new ApiResponse(true, "Foto de perfil actualizada!"),
+                HttpStatus.ACCEPTED);
+    }
+
+    @Secured({"ROLE_ADMIN"})
+    @PostMapping("/{username}/uploadFotoPerfil")
+    public ResponseEntity<?> uploadFotoPerfil(@PathVariable(value = "username") String username,
+            @RequestParam("file") MultipartFile file) {
+        bFileStorageService.storeFotoPerfil(file, escortRepository.findByUsername(username).get());
+
+        return new ResponseEntity(new ApiResponse(true, "Foto de perfil actualizada!"),
+                HttpStatus.ACCEPTED);
+    }
+
+    @GetMapping("/{username}/getFotoPerfil")
+    public ResponseEntity<?> getFotoPerfil(@PathVariable(value = "username") String username) {
+        Escort escort = escortRepository.findByUsername(username).get();
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(escort.getTipoFoto()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + escort.getName() + "\"")
+                .body(new ByteArrayResource(ArrayUtils.toPrimitive(escort.getFotoPerfil())));
     }
 
     @GetMapping("/{username}/foto/{idFoto}")

@@ -7,6 +7,7 @@ package empresa.software.sc.restapi.controller;
 
 import empresa.software.sc.restapi.exception.AppException;
 import empresa.software.sc.restapi.model.Cliente;
+import empresa.software.sc.restapi.model.Escort;
 import empresa.software.sc.restapi.model.Role;
 import empresa.software.sc.restapi.model.RoleName;
 import empresa.software.sc.restapi.model.User;
@@ -33,9 +34,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -80,8 +83,8 @@ public class ClienteController {
     }
 
     @Secured({"ROLE_CLIENTE"})
-    @PostMapping("/actualizar")
-    ResponseEntity<?> registerUserCliente(@CurrentUser UserPrincipal userprincipal, @Valid @RequestBody ClienteRequest signUpRequest) {
+    @PutMapping("/me")
+    ResponseEntity<?> updateUserCliente(@CurrentUser UserPrincipal userprincipal, @Valid @RequestBody ClienteRequest signUpRequest) {
 
         Cliente user = (Cliente) clienteRepository.findByUsername(userprincipal.getUsername()).get();
 
@@ -136,5 +139,14 @@ public class ClienteController {
         Cliente result = clienteRepository.save(cliente);
 
         return null;
+    }
+    
+    @Secured({"ROLE_ADMIN"})
+    @DeleteMapping("/{username}")
+    public ResponseEntity<?> DeleteCliente(@PathVariable String username){
+        Cliente cliente = (Cliente)userRepository.findByUsername(username).get();
+        clienteRepository.delete(cliente);
+        return new ResponseEntity(new ApiResponse(true , "Cliente eliminada! username+ "+cliente.getUsername()),
+                    HttpStatus.ACCEPTED);
     }
 }

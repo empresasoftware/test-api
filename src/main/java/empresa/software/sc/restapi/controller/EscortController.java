@@ -7,10 +7,14 @@ package empresa.software.sc.restapi.controller;
 
 import empresa.software.sc.restapi.model.Cliente;
 import empresa.software.sc.restapi.model.Escort;
+import empresa.software.sc.restapi.model.Foto;
 import empresa.software.sc.restapi.model.User;
+import empresa.software.sc.restapi.payload.ApiResponse;
 import empresa.software.sc.restapi.payload.ClienteRequest;
 import empresa.software.sc.restapi.payload.EscortRequest;
+import empresa.software.sc.restapi.payload.EscortResponse;
 import empresa.software.sc.restapi.repository.EscortRepository;
+import empresa.software.sc.restapi.repository.FotoRepository;
 import empresa.software.sc.restapi.repository.UserRepository;
 import empresa.software.sc.restapi.security.CurrentUser;
 import empresa.software.sc.restapi.security.UserPrincipal;
@@ -25,11 +29,14 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,14 +54,21 @@ public class EscortController {
     @Autowired
     private EscortRepository escortRepository;
     
+    @Autowired
+    private FotoRepository fotoRepository;
+    
     @GetMapping("/all")
     public Page<Escort> getAllPosts(Pageable pageable) {
         return escortRepository.findAll(pageable);
     }
     
     @GetMapping("/{username}")
-    public User accountDetails(@PathVariable String username) {
-        return escortRepository.findByUsername(username).get();
+    public ResponseEntity<?> accountDetails(@PathVariable String username, Pageable pageable) {
+        
+        Escort escort = escortRepository.findByUsername(username).get();
+        Page<Foto> pageableFotos = fotoRepository.findByEscortId(escort.getId(), pageable);
+        return new ResponseEntity(new EscortResponse(escort, pageableFotos),
+                    HttpStatus.ACCEPTED);
     }
 
     @Secured({"ROLE_ESCORT"})
@@ -65,8 +79,8 @@ public class EscortController {
     
 
     @Secured({"ROLE_ESCORT"})
-    @PostMapping("/registrar")
-    ResponseEntity<?> registerUserEscort(@CurrentUser UserPrincipal userprincipal, @Valid @RequestBody EscortRequest escortRequest) {
+    @PutMapping("/me")
+    public Escort registerUserEscort(@CurrentUser UserPrincipal userprincipal, @Valid @RequestBody EscortRequest escortRequest) {
                 
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -80,6 +94,7 @@ public class EscortController {
         
         Escort escort = (Escort)userRepository.findByUsername(userprincipal.getUsername()).get();
         // Creating escort's account
+        escort.setPais(escortRequest.getPais());
         escort.setProlifeEdited(true);
         escort.setBiografia(escortRequest.getBiografia());
         escort.setCabello(escortRequest.getCabello());
@@ -92,14 +107,14 @@ public class EscortController {
         escort.setPeso(Double.parseDouble(escortRequest.getPeso()));
         escort.setRestricciones(escortRequest.getRestricciones());
         
-        escortRepository.save(escort);
+        escort = escortRepository.save(escort);
         
-        return null;
+        return escort;
     }
     
     @Secured({"ROLE_ADMIN"})
-    @PostMapping("/registrar/{username}")
-    ResponseEntity<?> registerUserEscort(@PathVariable String username, @Valid @RequestBody EscortRequest escortRequest) {
+    @PutMapping("/{username}")
+    public Escort registerUserEscort(@PathVariable String username, @Valid @RequestBody EscortRequest escortRequest) {
                 
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -113,6 +128,7 @@ public class EscortController {
         
         Escort escort = (Escort)userRepository.findByUsername(username).get();
         // Creating escort's account
+        escort.setPais(escortRequest.getPais());
         escort.setProlifeEdited(true);
         escort.setBiografia(escortRequest.getBiografia());
         escort.setCabello(escortRequest.getCabello());
@@ -125,8 +141,17 @@ public class EscortController {
         escort.setPeso(Double.parseDouble(escortRequest.getPeso()));
         escort.setRestricciones(escortRequest.getRestricciones());
         
-        escortRepository.save(escort);
+        escort = escortRepository.save(escort);
         
-        return null;
+        return escort;
+    }
+    
+    @Secured({"ROLE_ADMIN"})
+    @DeleteMapping("/{username}")
+    public ResponseEntity<?> DeleteEscort(@PathVariable String username){
+        Escort escort = (Escort)userRepository.findByUsername(username).get();
+        escortRepository.delete(escort);
+        return new ResponseEntity(new ApiResponse(true , "Escort eliminada! username+ "+escort.getUsername()),
+                    HttpStatus.ACCEPTED);
     }
 }

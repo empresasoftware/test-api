@@ -60,7 +60,11 @@ public class Escort extends User {
     @Size(max = 100)
     private String restricciones;
     
+    @Column(name = "foto_perfil")
+    protected Byte[] fotoPerfil;
     
+    @Column(name = "tipo_foto")
+    protected String tipoFoto;
 
     public Escort() {
         
@@ -183,6 +187,22 @@ public class Escort extends User {
 
     public void setRestricciones(String restricciones) {
         this.restricciones = restricciones;
+    }
+
+    public Byte[] getFotoPerfil() {
+        return fotoPerfil;
+    }
+
+    public void setFotoPerfil(Byte[] fotoPerfil) {
+        this.fotoPerfil = fotoPerfil;
+    }
+
+    public String getTipoFoto() {
+        return tipoFoto;
+    }
+
+    public void setTipoFoto(String tipoFoto) {
+        this.tipoFoto = tipoFoto;
     }
     
 }
