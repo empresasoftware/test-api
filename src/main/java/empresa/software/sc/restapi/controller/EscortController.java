@@ -5,6 +5,7 @@
  */
 package empresa.software.sc.restapi.controller;
 
+import empresa.software.sc.restapi.exception.ResourceNotFoundException;
 import empresa.software.sc.restapi.model.Cliente;
 import empresa.software.sc.restapi.model.Escort;
 import empresa.software.sc.restapi.model.Foto;
@@ -28,6 +29,7 @@ import java.util.logging.Logger;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,27 +50,32 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/escorts")
 public class EscortController {
+
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private EscortRepository escortRepository;
-    
+
     @Autowired
     private FotoRepository fotoRepository;
-    
-    @GetMapping("/all")
-    public Page<Escort> getAllPosts(Pageable pageable) {
-        return escortRepository.findAll(pageable);
+
+    @GetMapping("/all/{page}/{pageSize}")
+    public Page<Escort> getAllPosts(@PathVariable int page, @PathVariable int pageSize, Pageable pageable) {
+        Page<Escort> resultPage = escortRepository.findAll(PageRequest.of(page, pageSize));
+        if (page > resultPage.getTotalPages()) {
+            throw new ResourceNotFoundException("EscortPage", "page", page);
+        }
+        return resultPage;
     }
-    
+
     @GetMapping("/{username}")
     public ResponseEntity<?> accountDetails(@PathVariable String username, Pageable pageable) {
-        
+
         Escort escort = escortRepository.findByUsername(username).get();
         Page<Foto> pageableFotos = fotoRepository.findByEscortId(escort.getId(), pageable);
         return new ResponseEntity(new EscortResponse(escort, pageableFotos),
-                    HttpStatus.ACCEPTED);
+                HttpStatus.ACCEPTED);
     }
 
     @Secured({"ROLE_ESCORT"})
@@ -76,12 +83,11 @@ public class EscortController {
     public User accountDetails(@CurrentUser UserPrincipal userprincipal) {
         return escortRepository.findByUsername(userprincipal.getUsername()).get();
     }
-    
 
     @Secured({"ROLE_ESCORT"})
     @PutMapping("/me")
     public Escort registerUserEscort(@CurrentUser UserPrincipal userprincipal, @Valid @RequestBody EscortRequest escortRequest) {
-                
+
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
 
@@ -91,8 +97,8 @@ public class EscortController {
         } catch (ParseException ex) {
             Logger.getLogger(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        Escort escort = (Escort)userRepository.findByUsername(userprincipal.getUsername()).get();
+
+        Escort escort = (Escort) userRepository.findByUsername(userprincipal.getUsername()).get();
         // Creating escort's account
         escort.setPais(escortRequest.getPais());
         escort.setProlifeEdited(true);
@@ -106,16 +112,16 @@ public class EscortController {
         escort.setOrientacion(escortRequest.getOrientacion());
         escort.setPeso(Double.parseDouble(escortRequest.getPeso()));
         escort.setRestricciones(escortRequest.getRestricciones());
-        
+
         escort = escortRepository.save(escort);
-        
+
         return escort;
     }
-    
+
     @Secured({"ROLE_ADMIN"})
     @PutMapping("/{username}")
     public Escort registerUserEscort(@PathVariable String username, @Valid @RequestBody EscortRequest escortRequest) {
-                
+
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
 
@@ -125,8 +131,8 @@ public class EscortController {
         } catch (ParseException ex) {
             Logger.getLogger(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        Escort escort = (Escort)userRepository.findByUsername(username).get();
+
+        Escort escort = (Escort) userRepository.findByUsername(username).get();
         // Creating escort's account
         escort.setPais(escortRequest.getPais());
         escort.setProlifeEdited(true);
@@ -140,18 +146,18 @@ public class EscortController {
         escort.setOrientacion(escortRequest.getOrientacion());
         escort.setPeso(Double.parseDouble(escortRequest.getPeso()));
         escort.setRestricciones(escortRequest.getRestricciones());
-        
+
         escort = escortRepository.save(escort);
-        
+
         return escort;
     }
-    
+
     @Secured({"ROLE_ADMIN"})
     @DeleteMapping("/{username}")
-    public ResponseEntity<?> DeleteEscort(@PathVariable String username){
-        Escort escort = (Escort)userRepository.findByUsername(username).get();
+    public ResponseEntity<?> DeleteEscort(@PathVariable String username) {
+        Escort escort = (Escort) userRepository.findByUsername(username).get();
         escortRepository.delete(escort);
-        return new ResponseEntity(new ApiResponse(true , "Escort eliminada! username+ "+escort.getUsername()),
-                    HttpStatus.ACCEPTED);
+        return new ResponseEntity(new ApiResponse(true, "Escort eliminada! username+ " + escort.getUsername()),
+                HttpStatus.ACCEPTED);
     }
 }

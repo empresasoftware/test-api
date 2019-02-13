@@ -5,6 +5,7 @@
  */
 package empresa.software.sc.restapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.*;
@@ -61,6 +62,7 @@ public class Escort extends User {
     private String restricciones;
     
     @Column(name = "foto_perfil")
+    @JsonIgnore
     protected Byte[] fotoPerfil;
     
     @Column(name = "tipo_foto")

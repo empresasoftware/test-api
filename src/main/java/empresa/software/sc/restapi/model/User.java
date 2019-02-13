@@ -5,6 +5,7 @@
  */
 package empresa.software.sc.restapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import empresa.software.sc.restapi.model.audit.DateAudit;
 import org.hibernate.annotations.NaturalId;
 import javax.persistence.*;
@@ -53,6 +54,7 @@ public class User extends DateAudit {
 
     @NotBlank
     @Size(max = 100)
+    @JsonIgnore
     private String password;
     
     @Column(name = "prolife_edited")

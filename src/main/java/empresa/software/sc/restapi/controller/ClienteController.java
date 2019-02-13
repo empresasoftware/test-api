@@ -6,6 +6,7 @@
 package empresa.software.sc.restapi.controller;
 
 import empresa.software.sc.restapi.exception.AppException;
+import empresa.software.sc.restapi.exception.ResourceNotFoundException;
 import empresa.software.sc.restapi.model.Cliente;
 import empresa.software.sc.restapi.model.Escort;
 import empresa.software.sc.restapi.model.Role;
@@ -29,6 +30,7 @@ import java.util.logging.Logger;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -65,9 +67,13 @@ public class ClienteController {
     PasswordEncoder passwordEncoder;
 
     @Secured("ROLE_ADMIN")
-    @GetMapping("/all")
-    public Page<Cliente> getAllPosts(Pageable pageable) {
-        return clienteRepository.findAll(pageable);
+    @GetMapping("/all/{page}/{pageSize}")
+    public Page<Cliente> getAllPosts(@PathVariable int page, @PathVariable int pageSize, Pageable pageable) {
+        Page<Cliente> resultPage = clienteRepository.findAll(PageRequest.of(page, pageSize));
+        if (page > resultPage.getTotalPages()) {
+            throw new ResourceNotFoundException("ClientPage", "page", page);
+        }
+        return resultPage;
     }
 
     @Secured({"ROLE_ADMIN"})
@@ -140,13 +146,13 @@ public class ClienteController {
 
         return null;
     }
-    
+
     @Secured({"ROLE_ADMIN"})
     @DeleteMapping("/{username}")
-    public ResponseEntity<?> DeleteCliente(@PathVariable String username){
-        Cliente cliente = (Cliente)userRepository.findByUsername(username).get();
+    public ResponseEntity<?> DeleteCliente(@PathVariable String username) {
+        Cliente cliente = (Cliente) userRepository.findByUsername(username).get();
         clienteRepository.delete(cliente);
-        return new ResponseEntity(new ApiResponse(true , "Cliente eliminada! username+ "+cliente.getUsername()),
-                    HttpStatus.ACCEPTED);
+        return new ResponseEntity(new ApiResponse(true, "Cliente eliminada! username+ " + cliente.getUsername()),
+                HttpStatus.ACCEPTED);
     }
 }
