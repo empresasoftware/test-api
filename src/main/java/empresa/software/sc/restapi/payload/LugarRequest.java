@@ -3,13 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package empresa.software.sc.restapi.model;
+package empresa.software.sc.restapi.payload;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
@@ -17,39 +12,23 @@ import javax.validation.constraints.Size;
  *
  * @author pedro
  */
-@Entity
-@Table(name = "lugares")
-public class Lugar {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected Long id;
+public class LugarRequest {
     
     @NotBlank
     @Size(max = 50)
-    protected String nombre;
+    private String nombre;
     
     @NotBlank
     @Size(max = 255)
-    protected String descripcion;
+    private String descripcion;
     
     @NotBlank
     @Size(max = 255)
-    protected String direccion;
+    private String direccion;
     
     @NotBlank
     @Size(max = 100)
-    protected String referencia;
-
-    public Lugar(String nombre, String descripcion, String direccion, String referencia) {
-        this.nombre = nombre;
-        this.descripcion = descripcion;
-        this.direccion = direccion;
-        this.referencia = referencia;
-    }
-
-    public Long getId() {
-        return id;
-    }
+    private String referencia;
 
     public String getNombre() {
         return nombre;
@@ -67,10 +46,6 @@ public class Lugar {
         return referencia;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
@@ -86,4 +61,5 @@ public class Lugar {
     public void setReferencia(String referencia) {
         this.referencia = referencia;
     }
+
 }

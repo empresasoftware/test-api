@@ -7,6 +7,7 @@ package empresa.software.sc.restapi.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Date;
+import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -67,6 +68,9 @@ public class Escort extends User {
     
     @Column(name = "tipo_foto")
     protected String tipoFoto;
+    
+    @OneToMany(mappedBy = "escort", cascade = CascadeType.ALL)
+    protected Set<Contrato> contratos;
 
     public Escort() {
         

@@ -6,8 +6,11 @@
 package empresa.software.sc.restapi.model;
 
 import java.util.Date;
+import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.validation.constraints.NotBlank;
@@ -27,10 +30,13 @@ public class Cliente extends User {
 
     @Size(max = 20)
     private String estado;
-    
-    @Column(name = "fecha_nacimiento",nullable=false)
+
+    @Column(name = "fecha_nacimiento", nullable = false)
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date fechaNacimiento;
+
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
+    protected Set<Contrato> contratos;
 
     public Cliente() {
     }
@@ -47,8 +53,6 @@ public class Cliente extends User {
         this.estado = estado;
         this.fechaNacimiento = fechaNacimiento;
     }
-    
-    
 
     public String getPais() {
         return pais;
@@ -72,5 +76,13 @@ public class Cliente extends User {
 
     public void setFechaNacimiento(Date fechaNacimiento) {
         this.fechaNacimiento = fechaNacimiento;
+    }
+
+    public Set<Contrato> getContratos() {
+        return contratos;
+    }
+
+    public void setContratos(Set<Contrato> contratos) {
+        this.contratos = contratos;
     }
 }

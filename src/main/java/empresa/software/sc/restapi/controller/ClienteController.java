@@ -124,7 +124,7 @@ public class ClienteController {
 
     @Secured({"ROLE_ADMIN"})
     @PostMapping("/registrar/{username}")
-    ResponseEntity<?> registerUserCliente(@PathVariable String username, @Valid @RequestBody ClienteRequest clienteRequest) {
+    ResponseEntity<?> registerUserCliente(@PathVariable("username") String username, @Valid @RequestBody ClienteRequest clienteRequest) {
 
         SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
