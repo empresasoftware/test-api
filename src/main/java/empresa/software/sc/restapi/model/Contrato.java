@@ -59,6 +59,9 @@ public class Contrato extends DateAudit{
     @JoinColumn
     protected Escort escort;
 
+    public Contrato() {
+    }
+
     public Contrato(Date fechaReserva, int tiempo, boolean aceptado, boolean pagado, String observaciones, Lugar lugar, Cliente cliente, Escort escort) {
         this.fechaReserva = fechaReserva;
         this.tiempo = tiempo;
@@ -69,8 +72,6 @@ public class Contrato extends DateAudit{
         this.cliente = cliente;
         this.escort = escort;
     }
-    
-    
 
     public Long getId() {
         return id;

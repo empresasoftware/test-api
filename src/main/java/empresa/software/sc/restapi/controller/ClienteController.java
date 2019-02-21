@@ -144,7 +144,11 @@ public class ClienteController {
         cliente.setPais(clienteRequest.getPais());
         Cliente result = clienteRepository.save(cliente);
 
-        return null;
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentContextPath().path("/api/clientes/")
+                .buildAndExpand(result.getUsername()).toUri();
+
+        return ResponseEntity.created(location).body(new ApiResponse(true, "Datos Cliente actualizados successfully"));
     }
 
     @Secured({"ROLE_ADMIN"})

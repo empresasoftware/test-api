@@ -40,6 +40,11 @@ public class Lugar {
     @Size(max = 100)
     protected String referencia;
 
+    public Lugar() {
+    }
+    
+    
+
     public Lugar(String nombre, String descripcion, String direccion, String referencia) {
         this.nombre = nombre;
         this.descripcion = descripcion;

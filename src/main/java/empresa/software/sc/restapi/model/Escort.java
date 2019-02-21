@@ -67,10 +67,12 @@ public class Escort extends User {
     protected Byte[] fotoPerfil;
     
     @Column(name = "tipo_foto")
+    @JsonIgnore
     protected String tipoFoto;
     
-    @OneToMany(mappedBy = "escort", cascade = CascadeType.ALL)
-    protected Set<Contrato> contratos;
+    @OneToMany(mappedBy = "escort", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<Contrato> contratos;
 
     public Escort() {
         
@@ -209,6 +211,14 @@ public class Escort extends User {
 
     public void setTipoFoto(String tipoFoto) {
         this.tipoFoto = tipoFoto;
+    }
+
+    public Set<Contrato> getContratos() {
+        return contratos;
+    }
+
+    public void setContratos(Set<Contrato> contratos) {
+        this.contratos = contratos;
     }
     
 }
