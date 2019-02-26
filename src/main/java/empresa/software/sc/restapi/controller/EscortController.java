@@ -95,7 +95,7 @@ public class EscortController {
         Escort escort = (Escort)userRepository.findByUsername(userprincipal.getUsername()).get();
         // Creating escort's account
         escort.setPais(escortRequest.getPais());
-        escort.setProlifeEdited(true);
+        escort.setProfileEdited(true);
         escort.setBiografia(escortRequest.getBiografia());
         escort.setCabello(escortRequest.getCabello());
         escort.setEstatura(Double.parseDouble(escortRequest.getEstatura()));
@@ -129,7 +129,7 @@ public class EscortController {
         Escort escort = (Escort)userRepository.findByUsername(username).get();
         // Creating escort's account
         escort.setPais(escortRequest.getPais());
-        escort.setProlifeEdited(true);
+        escort.setProfileEdited(true);
         escort.setBiografia(escortRequest.getBiografia());
         escort.setCabello(escortRequest.getCabello());
         escort.setEstatura(Double.parseDouble(escortRequest.getEstatura()));
