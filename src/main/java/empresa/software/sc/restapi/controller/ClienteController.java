@@ -132,7 +132,7 @@ public class ClienteController {
 
         Cliente cliente = (Cliente) userRepository.findByUsername(username).get();
         // Creating cliente's account
-        cliente.setProlifeEdited(true);
+        cliente.setProfileEdited(true);
         cliente.setEstado(clienteRequest.getEstado());
         cliente.setFechaNacimiento(date);
         cliente.setPais(clienteRequest.getPais());

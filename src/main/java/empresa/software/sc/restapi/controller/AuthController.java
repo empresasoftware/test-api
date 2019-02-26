@@ -27,6 +27,7 @@ import empresa.software.sc.restapi.repository.EscortRepository;
 import empresa.software.sc.restapi.repository.RoleRepository;
 import empresa.software.sc.restapi.repository.UserRepository;
 import empresa.software.sc.restapi.security.JwtTokenProvider;
+import java.io.InputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,9 +49,20 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Properties;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.mail.internet.MimeMessage;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Bean;
+import org.springframework.mail.MailException;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessagePreparator;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -76,7 +88,34 @@ public class AuthController {
 
     @Autowired
     JwtTokenProvider tokenProvider;
+  
+    //private JavaMailSender ms = new JavaMailSenderImpl();
+   /*
+    @Bean
+    public JavaMailSender getJavaMailSender() {
+        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+        mailSender.setHost("smtp.gmail.com");
+        mailSender.setPort(587);
 
+        mailSender.setUsername("escorts.cuenca90@gmail.com");
+        mailSender.setPassword("Esc.cuenca.90");
+
+        Properties props = mailSender.getJavaMailProperties();
+        props.put("mail.transport.protocol", "smtp");
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.debug", "true");
+
+        return mailSender;
+    }*/
+    
+    
+    //@Autowired
+    //private JavaMailSender mailSender;
+    
+    @Autowired
+    ApplicationEventPublisher eventPublisher;
+    
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -126,11 +165,32 @@ public class AuthController {
         user.setRoles(Collections.singleton(userRole));
 
         Cliente result = clienteRepository.save(user);
-
+        
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/clientes/")
                 .buildAndExpand(result.getUsername()).toUri();
-
+ 
+        
+        //String appUrl = signUpRequest.getContextPath();
+        Locale locale = new Locale("en");
+        //locale = new Locale
+        //eventPublisher.publishEvent(new OnRegistrationCompleteEvent
+         // (user, locale, "/cliente/signup"));
+        
+        //SimpleMailMessage email = new SimpleMailMessage();
+        //email.setTo(user.getEmail());
+        //email.setSubject("Asunto del correo");
+        //email.setText("Mensaje" + " rn" + "http://localhost:8080" + " código de confirmación");
+        //ms.send(email);
+        //mailSender.send(email);
+        User usuario = userRepository.findByUsername(result.getUsername()).get();
+        
+        System.out.println("----------------------AQUI----------------------");
+        System.out.println(user.getId());
+        System.out.println("----------------------AQUI----------------------");
+        eventPublisher.publishEvent(new OnRegistrationCompleteEvent
+          (usuario, locale, "urlejemplo"));
+        
         return ResponseEntity.created(location).body(new ApiResponse(true, "Cliente registered successfully"));
     }
 

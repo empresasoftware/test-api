@@ -55,9 +55,12 @@ public class User extends DateAudit {
     @Size(max = 100)
     private String password;
     
-    @Column(name = "prolife_edited")
-    protected Boolean prolifeEdited ;
+    @Column(name = "profile_edited")
+    private Boolean profileEdited ;
 
+    @Column(name = "verified")
+    private Boolean verified;
+    
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -68,12 +71,13 @@ public class User extends DateAudit {
 
     }
 
-    public User(String name, String username, String email, String password, Boolean prolifeEdited) {
+    public User(String name, String username, String email, String password, Boolean profileEdited) {
         this.name = name;
         this.username = username;
         this.email = email;
         this.password = password;
-        this.prolifeEdited = prolifeEdited;
+        this.profileEdited = profileEdited;
+        this.verified = false;
     }
 
     public Long getId() {
@@ -124,11 +128,19 @@ public class User extends DateAudit {
         this.roles = roles;
     }
 
-    public boolean isProlifeEdited() {
-        return prolifeEdited;
+    public Boolean getVerified() {
+        return verified;
     }
 
-    public void setProlifeEdited(Boolean prolifeEdited) {
-        this.prolifeEdited = prolifeEdited;
+    public void setVerified(Boolean verified) {
+        this.verified = verified;
+    }
+
+    public Boolean getProfileEdited() {
+        return profileEdited;
+    }
+ 
+    public void setProfileEdited(Boolean profileEdited) {
+        this.profileEdited = profileEdited;
     }
 }
