@@ -5,6 +5,7 @@
  */
 package empresa.software.sc.restapi.controller;
 
+import empresa.software.sc.restapi.exception.ResourceNotFoundException;
 import empresa.software.sc.restapi.model.Escort;
 import empresa.software.sc.restapi.model.Foto;
 import empresa.software.sc.restapi.payload.ApiResponse;
@@ -20,6 +21,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -53,10 +55,14 @@ public class FotoController {
     @Autowired
     DBFileStorageService bFileStorageService;
 
-    @GetMapping("/{username}/fotos")
+    @GetMapping("/{username}/fotos/{page}/{pageSize}")
     public Page<Foto> getAllPhotosByEscortUsername(@PathVariable(value = "username") String escortUsername,
-            Pageable pageable) {
-        return fotoRepository.findByEscortId(escortRepository.findByUsername(escortUsername).get().getId(), pageable);
+            @PathVariable(value = "page") int page, @PathVariable(value = "pageSize") int pageSize, Pageable pageable) {
+        Page<Foto> resultPage = fotoRepository.findByEscortId(escortRepository.findByUsername(escortUsername).get().getId(), PageRequest.of(page, pageSize));
+        if (page > resultPage.getTotalPages()) {
+            throw new ResourceNotFoundException("FotoPage", "page", page);
+        }
+        return resultPage;
     }
 
     @Secured({"ROLE_ESCORT"})

@@ -5,6 +5,7 @@
  */
 package empresa.software.sc.restapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import empresa.software.sc.restapi.model.audit.DateAudit;
 import org.hibernate.annotations.NaturalId;
 import javax.persistence.*;
@@ -53,6 +54,7 @@ public class User extends DateAudit {
 
     @NotBlank
     @Size(max = 100)
+    @JsonIgnore
     private String password;
     
     @Column(name = "profile_edited")
@@ -65,6 +67,7 @@ public class User extends DateAudit {
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @JsonIgnore
     private Set<Role> roles = new HashSet<>();
     
     public User() {

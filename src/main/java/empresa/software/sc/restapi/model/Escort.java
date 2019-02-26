@@ -5,7 +5,9 @@
  */
 package empresa.software.sc.restapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Date;
+import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -61,10 +63,16 @@ public class Escort extends User {
     private String restricciones;
     
     @Column(name = "foto_perfil")
+    @JsonIgnore
     protected Byte[] fotoPerfil;
     
     @Column(name = "tipo_foto")
+    @JsonIgnore
     protected String tipoFoto;
+    
+    @OneToMany(mappedBy = "escort", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<Contrato> contratos;
 
     public Escort() {
         
@@ -203,6 +211,14 @@ public class Escort extends User {
 
     public void setTipoFoto(String tipoFoto) {
         this.tipoFoto = tipoFoto;
+    }
+
+    public Set<Contrato> getContratos() {
+        return contratos;
+    }
+
+    public void setContratos(Set<Contrato> contratos) {
+        this.contratos = contratos;
     }
     
 }
