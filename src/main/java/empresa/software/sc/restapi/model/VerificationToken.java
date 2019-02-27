@@ -6,6 +6,7 @@
 package empresa.software.sc.restapi.model;
 
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
@@ -22,7 +23,7 @@ import javax.persistence.OneToOne;
  * @author Steven
  */
 @Entity
-public class VerificationToken {
+public class VerificationToken implements Serializable{
     private static final int EXPIRATION = 60 * 24;
  
     @Id
@@ -39,6 +40,11 @@ public class VerificationToken {
     
     private String token;
 
+    public VerificationToken() {
+    }
+    
+    
+
     public VerificationToken(User user, String token) {
         this.user = user;
         this.token = token;
@@ -51,6 +57,30 @@ public class VerificationToken {
         cal.add(Calendar.MINUTE, expiryTimeInMinutes);
         return new Date(cal.getTime().getTime());
     }*/
+
+    public Long getId() {
+        return id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
     
     
     

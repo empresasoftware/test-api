@@ -8,6 +8,8 @@ package empresa.software.sc.restapi.repository;
 import empresa.software.sc.restapi.model.User;
 import empresa.software.sc.restapi.model.VerificationToken;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /**
  *
@@ -18,5 +20,6 @@ public interface VerificationTokenRepository
  
     VerificationToken findByToken(String token);
  
-    VerificationToken findByUser(User user);
+    @Query("SELECT v FROM VerificationToken v WHERE v.user.id= :user_id")
+    VerificationToken findByUser(@Param("user_id") Long userId);
 }

@@ -15,6 +15,7 @@ import empresa.software.sc.restapi.model.Escort;
 import empresa.software.sc.restapi.model.Role;
 import empresa.software.sc.restapi.model.RoleName;
 import empresa.software.sc.restapi.model.User;
+import empresa.software.sc.restapi.model.VerificationToken;
 import empresa.software.sc.restapi.payload.AccountDetailsRequest;
 import empresa.software.sc.restapi.payload.ApiResponse;
 import empresa.software.sc.restapi.payload.ClienteRequest;
@@ -26,6 +27,7 @@ import empresa.software.sc.restapi.repository.ClienteRepository;
 import empresa.software.sc.restapi.repository.EscortRepository;
 import empresa.software.sc.restapi.repository.RoleRepository;
 import empresa.software.sc.restapi.repository.UserRepository;
+import empresa.software.sc.restapi.repository.VerificationTokenRepository;
 import empresa.software.sc.restapi.security.JwtTokenProvider;
 import java.io.InputStream;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,12 +52,14 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.mail.internet.MimeMessage;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.mail.MailException;
@@ -63,6 +67,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessagePreparator;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -88,30 +94,9 @@ public class AuthController {
 
     @Autowired
     JwtTokenProvider tokenProvider;
-  
-    //private JavaMailSender ms = new JavaMailSenderImpl();
-   /*
-    @Bean
-    public JavaMailSender getJavaMailSender() {
-        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost("smtp.gmail.com");
-        mailSender.setPort(587);
-
-        mailSender.setUsername("escorts.cuenca90@gmail.com");
-        mailSender.setPassword("Esc.cuenca.90");
-
-        Properties props = mailSender.getJavaMailProperties();
-        props.put("mail.transport.protocol", "smtp");
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.debug", "true");
-
-        return mailSender;
-    }*/
     
-    
-    //@Autowired
-    //private JavaMailSender mailSender;
+    @Autowired
+    VerificationTokenRepository tokenRepository;
     
     @Autowired
     ApplicationEventPublisher eventPublisher;
@@ -119,6 +104,19 @@ public class AuthController {
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
+        User user =null;
+        try{
+            user = userRepository.findByUsernameOrEmail(loginRequest.getUsernameOrEmail(),loginRequest.getUsernameOrEmail()).get();
+        }catch (NoSuchElementException ex){
+            return new ResponseEntity(new ApiResponse(false, "Please create an account!"),
+                    HttpStatus.FORBIDDEN);
+        }
+        
+        if(user.getVerified() == false){
+            return new ResponseEntity(new ApiResponse(false, "Please activate your account!"),
+                    HttpStatus.FORBIDDEN);
+        }
+        
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getUsernameOrEmail(),
@@ -133,7 +131,7 @@ public class AuthController {
     }
 
     @PostMapping("/cliente/signup")
-    public ResponseEntity<?> registerUserClient(@Valid @RequestBody ClienteRequest signUpRequest) {
+    public ResponseEntity<?> registerUserClient(@Valid @RequestBody ClienteRequest signUpRequest, HttpServletRequest request) {
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
             return new ResponseEntity(new ApiResponse(false, "Username is already taken!"),
                     HttpStatus.BAD_REQUEST);
@@ -170,32 +168,17 @@ public class AuthController {
                 .fromCurrentContextPath().path("/api/clientes/")
                 .buildAndExpand(result.getUsername()).toUri();
  
-        
-        //String appUrl = signUpRequest.getContextPath();
-        Locale locale = new Locale("en");
-        //locale = new Locale
-        //eventPublisher.publishEvent(new OnRegistrationCompleteEvent
-         // (user, locale, "/cliente/signup"));
-        
-        //SimpleMailMessage email = new SimpleMailMessage();
-        //email.setTo(user.getEmail());
-        //email.setSubject("Asunto del correo");
-        //email.setText("Mensaje" + " rn" + "http://localhost:8080" + " código de confirmación");
-        //ms.send(email);
-        //mailSender.send(email);
-        User usuario = userRepository.findByUsername(result.getUsername()).get();
-        
-        System.out.println("----------------------AQUI----------------------");
-        System.out.println(user.getId());
-        System.out.println("----------------------AQUI----------------------");
+        //Token account verification
+        Locale locale = new Locale("en");        
+        String jwt = tokenProvider.generateTokenVerificationEmail(result.getId());
         eventPublisher.publishEvent(new OnRegistrationCompleteEvent
-          (usuario, locale, "urlejemplo"));
+          ((User)result, locale, request.getServerName()+":"+request.getServerPort(), jwt));
         
-        return ResponseEntity.created(location).body(new ApiResponse(true, "Cliente registered successfully"));
+        return ResponseEntity.created(location).body(new ApiResponse(true, "Cliente registered successfully. Confirm your account to signin"));
     }
 
     @PostMapping("/escort/signup")
-    public ResponseEntity<?> registerUserEscort(@Valid @RequestBody EscortRequest signUpRequest) {
+    public ResponseEntity<?> registerUserEscort(@Valid @RequestBody EscortRequest signUpRequest, HttpServletRequest request) {
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
             return new ResponseEntity(new ApiResponse(false, "Username is already taken!"),
                     HttpStatus.BAD_REQUEST);
@@ -231,7 +214,35 @@ public class AuthController {
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/escorts/")
                 .buildAndExpand(result.getUsername()).toUri();
+        
+        //Token account verification
+        Locale locale = new Locale("en");        
+        String jwt = tokenProvider.generateTokenVerificationEmail(result.getId());
+        eventPublisher.publishEvent(new OnRegistrationCompleteEvent
+          ((User)result, locale, request.getServerName()+":"+request.getServerPort(), jwt));
 
         return ResponseEntity.created(location).body(new ApiResponse(true, "Escort registered successfully"));
+    }
+    
+    @GetMapping("/user/verify/token/{token}")
+    public ResponseEntity<?> verifyUser(@PathVariable String token){
+        
+        if (tokenProvider.validateToken(token)){
+            Long userId = tokenProvider.getUserIdFromJWT(token);
+            VerificationToken verificationToken = tokenRepository.findByUser(userId);
+            
+            if(token.equals(verificationToken.getToken())){
+                User user = verificationToken.getUser();
+                user.setVerified(Boolean.TRUE);
+                userRepository.save(user);
+
+                return new ResponseEntity(new ApiResponse(true, "Account Activated! " + user.getEmail()),
+                        HttpStatus.OK);
+            }
+
+        }
+        
+        return new ResponseEntity(new ApiResponse(true, "Account No Activated! Token Error "),
+                    HttpStatus.UNAUTHORIZED);
     }
 }

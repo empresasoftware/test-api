@@ -35,9 +35,11 @@ public class Foto implements Serializable {
     
     
     @Column(name = "nombre")
+    @JsonIgnore
     private String nombre;
     
     @Column(name = "tipo")
+    @JsonIgnore
     private String tipo;
     
     private byte[] foto;

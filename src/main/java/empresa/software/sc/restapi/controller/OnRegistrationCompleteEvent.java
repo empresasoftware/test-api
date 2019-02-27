@@ -17,13 +17,15 @@ public class OnRegistrationCompleteEvent extends ApplicationEvent{
     private String appUrl;
     private Locale locale;
     private User user;
+    private String token;
  
-    public OnRegistrationCompleteEvent(User user, Locale locale, String appUrl) {
+    public OnRegistrationCompleteEvent(User user, Locale locale, String appUrl, String token) {
         super(user);
          
         this.user = user;
         this.locale = locale;
         this.appUrl = appUrl;
+        this.token = token;
     }
      
     
@@ -70,5 +72,13 @@ public class OnRegistrationCompleteEvent extends ApplicationEvent{
      */
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }

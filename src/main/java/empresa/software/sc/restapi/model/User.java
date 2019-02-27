@@ -58,10 +58,10 @@ public class User extends DateAudit {
     private String password;
     
     @Column(name = "profile_edited")
-    private Boolean profileEdited ;
+    private boolean profileEdited ;
 
     @Column(name = "verified")
-    private Boolean verified;
+    private boolean verified;
     
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",
@@ -74,7 +74,7 @@ public class User extends DateAudit {
 
     }
 
-    public User(String name, String username, String email, String password, Boolean profileEdited) {
+    public User(String name, String username, String email, String password, boolean profileEdited) {
         this.name = name;
         this.username = username;
         this.email = email;

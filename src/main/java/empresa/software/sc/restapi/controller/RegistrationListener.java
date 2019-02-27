@@ -50,6 +50,7 @@ public class RegistrationListener implements
         props.put("mail.transport.protocol", "smtp");
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
         props.put("mail.debug", "true");
 
         return mailSender;
@@ -66,11 +67,7 @@ public class RegistrationListener implements
     private void confirmRegistration(OnRegistrationCompleteEvent event) {
         User user = event.getUser();
         //String token = UUID.randomUUID().toString();
-        String token = "tokendeseguridad";
-        
-        System.out.println("--------------REGISTRATION LISTENER---------------");
-        System.out.println(user.getId());
-        System.out.println("--------------REGISTRATION LISTENER---------------");
+        String token = event.getToken();
         
         VerificationToken verificationToken = new VerificationToken(user,token);
          
@@ -79,14 +76,14 @@ public class RegistrationListener implements
         String recipientAddress = user.getEmail();
         String subject = "Registration Confirmation";
         String confirmationUrl 
-          = "/registrationConfirm.html?token=" + token;
+          = event.getAppUrl() + "/api/auth/user/verify/token/" + token;
         //String message = messages.getMessage("message.regSucc", null, event.getLocale());
          
         String message = "MENSAJE DE PRUEBA";
         SimpleMailMessage email = new SimpleMailMessage();
         email.setTo(recipientAddress);
         email.setSubject(subject);
-        email.setText(message + " rn " + "http://localhost:8080" + confirmationUrl);
+        email.setText(message + " rn " + confirmationUrl);
         mailSender.send(email);
     }
 }
