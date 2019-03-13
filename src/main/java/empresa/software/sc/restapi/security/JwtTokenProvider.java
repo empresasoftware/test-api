@@ -45,6 +45,7 @@ public class JwtTokenProvider {
                 .claim("nombre", userPrincipal.getName())
                 .claim("email", userPrincipal.getEmail())
                 .claim("rol", userPrincipal.getAuthorities())
+                .claim("verified", true)
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
@@ -59,6 +60,7 @@ public class JwtTokenProvider {
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .claim("verified", false)
                 .compact();
     }
 

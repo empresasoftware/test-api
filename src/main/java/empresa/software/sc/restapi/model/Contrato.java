@@ -5,6 +5,7 @@
  */
 package empresa.software.sc.restapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import empresa.software.sc.restapi.model.audit.DateAudit;
 import java.util.Date;
 import javax.persistence.CascadeType;
@@ -53,10 +54,12 @@ public class Contrato extends DateAudit{
     
     @ManyToOne
     @JoinColumn
+    @JsonIgnore
     protected Cliente cliente;
 
     @ManyToOne
     @JoinColumn
+    @JsonIgnore
     protected Escort escort;
 
     public Contrato() {

@@ -13,6 +13,7 @@ import empresa.software.sc.restapi.model.Lugar;
 import empresa.software.sc.restapi.model.RoleName;
 import empresa.software.sc.restapi.payload.ApiResponse;
 import empresa.software.sc.restapi.payload.ContratoRequest;
+import empresa.software.sc.restapi.payload.ContratoResponse;
 import empresa.software.sc.restapi.repository.ClienteRepository;
 import empresa.software.sc.restapi.repository.ContratoRepository;
 import empresa.software.sc.restapi.repository.EscortRepository;
@@ -44,6 +45,7 @@ import java.util.logging.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
@@ -68,8 +70,8 @@ public class ContratoController {
 
     @Secured("ROLE_ADMIN")
     @GetMapping("/all/{page}/{pageSize}")
-    public Page<Contrato> getAllPosts(@PathVariable int page, @PathVariable int pageSize, Pageable pageable) {
-        Page<Contrato> resultPage = contratoRepository.findAll(PageRequest.of(page, pageSize));
+    public Page<ContratoResponse> getAllPosts(@PathVariable int page, @PathVariable int pageSize, Pageable pageable) {
+        Page<ContratoResponse> resultPage = contratoRepository.findAllResume(PageRequest.of(page, pageSize));
         if (page > resultPage.getTotalPages()) {
             throw new ResourceNotFoundException("ContratoPage", "page", page);
         }
@@ -93,8 +95,8 @@ public class ContratoController {
 
     @Secured("ROLE_CLIENTE")
     @GetMapping("/{id}")
-    public Contrato getContrato(@PathVariable Long id) {
-        return contratoRepository.findById(id).get();
+    public ContratoResponse getContrato(@PathVariable Long id) {
+        return contratoRepository.findbyIdResume(id);
     }
 
     @Secured("ROLE_CLIENTE")
@@ -126,6 +128,26 @@ public class ContratoController {
         return ResponseEntity.created(location).body(new ApiResponse(true, "Contrato registered successfully"));
     }
 
+    @Secured({"ROLE_ESCORT", "ROLE_ADMIN"})
+    @PutMapping("/aceptar/{id}")
+    ResponseEntity<?> aceptarContrato(@PathVariable("id") Long id) {
+        Contrato contrato = contratoRepository.findById(id).get();
+        contrato.setAceptado(true);
+        contratoRepository.save(contrato);
+        return new ResponseEntity(new ApiResponse(true, "Contrato ha sido aceptado!"),
+                HttpStatus.ACCEPTED);
+    }
+    
+    @Secured({"ROLE_ESCORT", "ROLE_ADMIN"})
+    @PutMapping("/cancelar/{id}")
+    ResponseEntity<?> cancelarContrato(@PathVariable("id") Long id) {
+        Contrato contrato = contratoRepository.findById(id).get();
+        contrato.setAceptado(false);
+        contratoRepository.save(contrato);
+        return new ResponseEntity(new ApiResponse(true, "Contrato ha sido cancelado!"),
+                HttpStatus.ACCEPTED);
+    }
+    
     @Secured("ROLE_ADMIN")
     @DeleteMapping("/{id}")
     ResponseEntity<?> deleteSite(@PathVariable("id") Long id) {

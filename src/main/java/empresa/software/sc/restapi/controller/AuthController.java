@@ -221,7 +221,7 @@ public class AuthController {
         eventPublisher.publishEvent(new OnRegistrationCompleteEvent
           ((User)result, locale, request.getServerName()+":"+request.getServerPort(), jwt));
 
-        return ResponseEntity.created(location).body(new ApiResponse(true, "Escort registered successfully"));
+        return ResponseEntity.created(location).body(new ApiResponse(true, "Escort registered successfully. Confirm your account to signin"));
     }
     
     @GetMapping("/user/verify/token/{token}")
