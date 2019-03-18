@@ -44,16 +44,14 @@ public class Cliente extends User {
     public Cliente() {
     }
 
-    public Cliente(String pais, String estado, Date fechaNacimiento) {
+    public Cliente(String pais, Date fechaNacimiento) {
         this.pais = pais;
-        this.estado = estado;
         this.fechaNacimiento = fechaNacimiento;
     }
 
-    public Cliente(String pais, String estado, Date fechaNacimiento, String name, String username, String email, String password) {
+    public Cliente(String pais, Date fechaNacimiento, String name, String username, String email, String password) {
         super(name, username, email, password, true);
         this.pais = pais;
-        this.estado = estado;
         this.fechaNacimiento = fechaNacimiento;
     }
 

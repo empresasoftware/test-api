@@ -10,8 +10,6 @@ package empresa.software.sc.restapi.model;
  * @author pedro
  */
 public enum  ServicioName {
-    ROLE_USER,
-    ROLE_ADMIN,
-    ROLE_ESCORT,
-    ROLE_CLIENTE
+    Blowjob,
+    Handjob
 }

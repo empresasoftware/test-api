@@ -7,6 +7,7 @@ package empresa.software.sc.restapi.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.*;
@@ -26,6 +27,10 @@ public class Escort extends User {
     @NotBlank
     @Size(max = 20)
     private String pais;
+    
+    @NotBlank
+    @Size(max = 50)
+    private String publicidad;
 
     private double estatura;
 
@@ -73,7 +78,16 @@ public class Escort extends User {
     @OneToMany(mappedBy = "escort", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<Contrato> contratos;
+    
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "escort_servicios",
+            joinColumns = @JoinColumn(name = "escort_id"),
+            inverseJoinColumns = @JoinColumn(name = "servicio_id"))
+    private Set<Servicio> servicios;
 
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Tarifa> tarifa;
+    
     public Escort() {
         
     }
@@ -219,6 +233,30 @@ public class Escort extends User {
 
     public void setContratos(Set<Contrato> contratos) {
         this.contratos = contratos;
+    }
+
+    public String getPublicidad() {
+        return publicidad;
+    }
+
+    public void setPublicidad(String publicidad) {
+        this.publicidad = publicidad;
+    }
+
+    public Set<Servicio> getServicios() {
+        return servicios;
+    }
+
+    public void setServicios(Set<Servicio> servicios) {
+        this.servicios = servicios;
+    }
+
+    public List<Tarifa> getTarifa() {
+        return tarifa;
+    }
+
+    public void setTarifa(List<Tarifa> tarifa) {
+        this.tarifa = tarifa;
     }
     
 }

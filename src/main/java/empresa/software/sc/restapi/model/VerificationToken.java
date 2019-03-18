@@ -7,8 +7,6 @@ package empresa.software.sc.restapi.model;
 
 
 import java.io.Serializable;
-import java.sql.Timestamp;
-import java.util.Calendar;
 import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;

@@ -20,9 +20,6 @@ public class ClienteRequest extends SignUpRequest{
     @NotBlank
     @Size(max = 20)
     private String pais;
-
-    @Size(max = 20)
-    private String estado;
     
     @NotBlank
     @Size(max = 20)
@@ -32,20 +29,12 @@ public class ClienteRequest extends SignUpRequest{
         return pais;
     }
 
-    public String getEstado() {
-        return estado;
-    }
-
     public String getFechaNacimiento() {
         return fechaNacimiento;
     }
 
     public void setPais(String pais) {
         this.pais = pais;
-    }
-
-    public void setEstado(String estado) {
-        this.estado = estado;
     }
 
     public void setFechaNacimiento(String fechaNacimiento) {

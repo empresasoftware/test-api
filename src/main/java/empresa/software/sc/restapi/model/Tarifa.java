@@ -5,11 +5,15 @@
  */
 package empresa.software.sc.restapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
+import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -26,17 +30,22 @@ public class Tarifa implements Serializable {
     protected int tiempo;
     
     protected double inversion;
+    
+    @ManyToOne
+    @JoinColumn
+    @JsonIgnore
+    private Escort escort;
 
     public Tarifa() {
     }
 
-    public Tarifa(int tiempo, double inversion) {
+    public Tarifa(int tiempo, double inversion, Escort escort) {
         this.tiempo = tiempo;
         this.inversion = inversion;
+        this.escort = escort;
     }
     
     
-
     public Long getId() {
         return id;
     }
@@ -60,4 +69,13 @@ public class Tarifa implements Serializable {
     public void setInversion(double inversion) {
         this.inversion = inversion;
     }
+
+    public Escort getEscort() {
+        return escort;
+    }
+
+    public void setEscort(Escort escort) {
+        this.escort = escort;
+    }
+    
 }

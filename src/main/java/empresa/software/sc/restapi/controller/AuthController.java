@@ -152,7 +152,7 @@ public class AuthController {
             Logger.getLogger(ClienteController.class.getName()).log(Level.SEVERE, null, ex);
         }
         // Creating user's account
-        Cliente user = new Cliente(signUpRequest.getPais(),signUpRequest.getEstado(), date,
+        Cliente user = new Cliente(signUpRequest.getPais(), date,
                 signUpRequest.getName(), signUpRequest.getUsername(), signUpRequest.getEmail(), signUpRequest.getPassword());
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));

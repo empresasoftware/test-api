@@ -106,7 +106,6 @@ public class ClienteController {
         // Updating user's account
 
         user.setPais(signUpRequest.getPais());
-        user.setEstado(signUpRequest.getEstado());
         user.setFechaNacimiento(date);
         user.setName(signUpRequest.getName());
         user.setUsername(signUpRequest.getUsername());
@@ -139,7 +138,6 @@ public class ClienteController {
         Cliente cliente = (Cliente) userRepository.findByUsername(username).get();
         // Creating cliente's account
         cliente.setProfileEdited(true);
-        cliente.setEstado(clienteRequest.getEstado());
         cliente.setFechaNacimiento(date);
         cliente.setPais(clienteRequest.getPais());
         Cliente result = clienteRepository.save(cliente);
