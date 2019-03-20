@@ -12,6 +12,9 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -40,6 +43,18 @@ public class Cliente extends User {
     @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore
     protected Set<Contrato> contratos;
+    
+    @ManyToMany
+    @JoinTable(name = "escort_like", joinColumns = @JoinColumn(name = "cliente_id"), inverseJoinColumns = @JoinColumn(name = "escort_id"))
+    private Set<Escort> likedEscorts;
+    
+    @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Set<EscortRating> ratings;
+    
+    @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Set<EscortComentario> comentarios;
 
     public Cliente() {
     }
@@ -86,4 +101,29 @@ public class Cliente extends User {
     public void setContratos(Set<Contrato> contratos) {
         this.contratos = contratos;
     }
+
+    public Set<EscortRating> getRatings() {
+        return ratings;
+    }
+
+    public void setRatings(Set<EscortRating> ratings) {
+        this.ratings = ratings;
+    }
+
+    public Set<EscortComentario> getComentarios() {
+        return comentarios;
+    }
+
+    public void setComentarios(Set<EscortComentario> comentarios) {
+        this.comentarios = comentarios;
+    }
+
+    public Set<Escort> getLikedEscorts() {
+        return likedEscorts;
+    }
+
+    public void setLikedEscorts(Set<Escort> likedEscorts) {
+        this.likedEscorts = likedEscorts;
+    }
+
 }

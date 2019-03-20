@@ -88,6 +88,17 @@ public class Escort extends User {
     @OneToMany(cascade = CascadeType.ALL)
     private List<Tarifa> tarifa;
     
+    @ManyToMany(mappedBy = "likedEscorts")
+    private Set<Cliente> likes;
+    
+    @OneToMany(mappedBy = "escort", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Set<EscortRating> ratings;
+    
+    @OneToMany(mappedBy = "escort", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Set<EscortComentario> comentarios;
+ 
     public Escort() {
         
     }
@@ -257,6 +268,30 @@ public class Escort extends User {
 
     public void setTarifa(List<Tarifa> tarifa) {
         this.tarifa = tarifa;
+    }
+
+    public Set<EscortRating> getRatings() {
+        return ratings;
+    }
+
+    public void setRatings(Set<EscortRating> ratings) {
+        this.ratings = ratings;
+    }
+
+    public Set<EscortComentario> getComentarios() {
+        return comentarios;
+    }
+
+    public void setComentarios(Set<EscortComentario> comentarios) {
+        this.comentarios = comentarios;
+    }
+
+    public Set<Cliente> getLikes() {
+        return likes;
+    }
+
+    public void setLikes(Set<Cliente> likes) {
+        this.likes = likes;
     }
     
 }
